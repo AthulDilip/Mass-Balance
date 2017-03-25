@@ -14,17 +14,20 @@ public class GameScreen : MonoBehaviour {
     public Rigidbody2D currBoxBody;
     public GameObject weightText;
     public GameObject roundText;
+    public GameObject[] overlay;
 
     private bool clicked = true;
     private bool balanceUpdated = true;
     private bool growBox = false;
+    private bool roundRestart = false;
+    private bool levelRestart = false;
 
     //Varaiables that will effect the gameplay
     private int balanceVel = 1;
-    private int boxGrowingSpeed = 4;
-    private float boxMaxSize = 2f;
+    private float boxGrowingSpeed = 3f;
+    private float boxMaxSize = 2.2f;
     private float balanceLimit = 3.6f;
-    private float balanceFriction = 150;
+    private float balanceFriction = 250;
     private float balanceYStart = -1f;
     private int weightExpander = 30;     //Directlt controls difficulty of the game
 
@@ -51,12 +54,12 @@ public class GameScreen : MonoBehaviour {
         //Get the text object
         weightText = GameObject.Find("WeightText");
         roundText = GameObject.Find("RoundText");
+        overlay = GameObject.FindGameObjectsWithTag("overlay");
+
         roundText.transform.position = new Vector3(Screen.width/2, 40, 0);
-
-
         roundText.GetComponent<Text>().text = "ROUND " + LevelData.round;
 
-        //create The rope
+        // reate The rope
         var balance1 = GameObject.Find("Balance1");
         var balance2 = GameObject.Find("Balance2");
         var balanceHeight = balance1.GetComponent<BoxCollider2D>().bounds.size.y;
@@ -93,9 +96,9 @@ public class GameScreen : MonoBehaviour {
             var randWeight = 1.0f;
 
             if(LevelData.round == 1) {
-                randWeight = Random.Range(1f, 1.5f);
+                randWeight = Random.Range(1f, 1.8f);
             }else {
-                randWeight = Random.Range(0.8f,1.2f);
+                randWeight = Random.Range(0.8f,1.8f);
             }
 
             var boxOb = Instantiate(box, new Vector3(lastX+randSpace, balanceYStart+2, 0), Quaternion.identity);
@@ -136,6 +139,16 @@ public class GameScreen : MonoBehaviour {
         //Handle mouseDown event
         if (Input.GetMouseButtonDown(0)) {
 
+            if(roundRestart) {
+                roundRestart = false;
+                SceneManager.LoadScene("GameScreen");
+            }
+
+            if(levelRestart) {
+                levelRestart = false;
+                SceneManager.LoadScene("LevelScreen");
+            }
+
             if (!clicked) {
                 placeBall();
             }
@@ -155,7 +168,7 @@ public class GameScreen : MonoBehaviour {
             var outOfScreen = false;
             currBoxBody = currBox.GetComponent<Rigidbody2D>();
 
-            if (currBoxBody.position.y < -6) {
+            if (currBoxBody.position.y < -10) {
                 currBoxBody.Sleep();
                 outOfScreen = true;
             }
@@ -335,11 +348,13 @@ public class GameScreen : MonoBehaviour {
                     //Level Completed
                     ++LevelData.level;
                     LevelData.round = 1;
-                    SceneManager.LoadScene("LevelScreen");
-                }else {
+                    showFeedBack(true);
+                    levelRestart = true;
+                } else {
                     //Round Completed
                     ++LevelData.round;
-                    SceneManager.LoadScene("GameScreen");
+                    showFeedBack(true);
+                    roundRestart = true;
                 }
             }
         }else {
@@ -348,18 +363,45 @@ public class GameScreen : MonoBehaviour {
                     //Level Completed
                     ++LevelData.level;
                     LevelData.round = 1;
-                    SceneManager.LoadScene("LevelScreen");
+                    showFeedBack(true);
+                    levelRestart = true;
                 } else {
                     //Round Completed
                     ++LevelData.round;
-                    SceneManager.LoadScene("GameScreen");
+                    showFeedBack(true);
+                    roundRestart = true;
                 }
 
             } else {
                 //Round Failed
                 LevelData.round = 1;
-                SceneManager.LoadScene("LevelScreen");
+                showFeedBack(false);
+                levelRestart = true;
             }
+        }
+    }
+
+    void showFeedBack(bool won) {
+        
+        foreach(var item in overlay) {
+            if(item.name == "Overlay") {
+                item.GetComponent<Image>().color = new Color32(51, 51, 51, 180);
+            }
+            else {
+                item.GetComponent<Image>().color = new Color32(255,255,255,255);
+            }
+        
+        }
+
+        GameObject.Find("TargetText").GetComponent<Text>().color = new Color32(50, 50, 50, 255);
+        GameObject.Find("DifferenceText").GetComponent<Text>().color = new Color32(50, 50, 50, 255);
+
+
+
+        if (won) {
+            GameObject.Find("WinText").GetComponent<Text>().color = new Color32(255, 255, 255, 255);
+        } else {
+            GameObject.Find("GameOverText").GetComponent<Text>().color = new Color32(255, 255, 255, 255);
         }
     }
 

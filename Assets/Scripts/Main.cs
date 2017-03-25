@@ -11,8 +11,8 @@ public class Main : MonoBehaviour {
     public bool clicked = false;
     public bool balanceUpdated = true;
     public bool growBall = false;
-    public int balanceVel = 1;
-    public int ballGrowingSpeed = 3;
+    public float balanceVel = 1f;
+    public float ballGrowingSpeed = 0.5f;
     public float balanceMovingSpeed = 0;
     public int weightDifference = 0;
 
@@ -63,7 +63,6 @@ public class Main : MonoBehaviour {
                 //Remove the rigid body property of the box
                 Destroy(currBoxBody);
                 currBox.tag = "ground";
-                print(currBox.tag);
                 currBox = null;
             }
         }
@@ -107,7 +106,6 @@ public class Main : MonoBehaviour {
         }
 
         var difference = prevWeight - weightDifference;
-        print(balanceVel);
 
         balanceMovingSpeed = difference / balanceVel;
 
