@@ -12,9 +12,10 @@ public class GameScreen : MonoBehaviour {
     public GameObject pully;
     public GameObject currBox;
     public Rigidbody2D currBoxBody;
-    public GameObject weightText;
-    public GameObject roundText;
-    public GameObject[] overlay;
+    private GameObject weightText;
+    private GameObject roundText;
+    private GameObject[] overlay;
+    private Animator anim;
 
     private bool clicked = true;
     private bool balanceUpdated = true;
@@ -58,6 +59,8 @@ public class GameScreen : MonoBehaviour {
 
         roundText.transform.position = new Vector3(Screen.width/2, 40, 0);
         roundText.GetComponent<Text>().text = "ROUND " + LevelData.round;
+
+        anim = GameObject.Find("ContinueText").GetComponent<Animator>();
 
         // reate The rope
         var balance1 = GameObject.Find("Balance1");
@@ -139,23 +142,29 @@ public class GameScreen : MonoBehaviour {
         //Handle mouseDown event
         if (Input.GetMouseButtonDown(0)) {
 
-            if(roundRestart) {
-                roundRestart = false;
-                SceneManager.LoadScene("GameScreen");
+            if(roundRestart || levelRestart) {
+                //Do Nothing (ie Don't grow the box if the round or level is to be restarted)
+            }else {
+                if (!clicked) {
+                    placeBall();
+                }
             }
 
-            if(levelRestart) {
-                levelRestart = false;
-                SceneManager.LoadScene("LevelScreen");
-            }
-
-            if (!clicked) {
-                placeBall();
-            }
         }
 
         //Handle mouseUp Event
         if (Input.GetMouseButtonUp(0)) {
+
+            if (roundRestart) {
+                roundRestart = false;
+                SceneManager.LoadScene("GameScreen");
+            }
+
+            if (levelRestart) {
+                levelRestart = false;
+                SceneManager.LoadScene("LevelScreen");
+            }
+
             if (!clicked) {
                 dropBall();
             }
@@ -394,8 +403,10 @@ public class GameScreen : MonoBehaviour {
         }
 
         GameObject.Find("TargetText").GetComponent<Text>().color = new Color32(50, 50, 50, 255);
+        GameObject.Find("TargetText").GetComponent<Text>().text = "TARGET : " + maxDiff;
         GameObject.Find("DifferenceText").GetComponent<Text>().color = new Color32(50, 50, 50, 255);
-
+        GameObject.Find("DifferenceText").GetComponent<Text>().text = "DIFFERENCE : " + Mathf.Abs(Mathf.Floor(weightDifference * weightExpander));
+        anim.SetTrigger("isOverlayVisible");
 
 
         if (won) {

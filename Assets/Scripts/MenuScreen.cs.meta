@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 00deb4465b4f1f74eb622a5a1922d9cf
+timeCreated: 1490514371
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - ropeSprite: {fileID: 1242728626315966, guid: dd68340fcc0f09c478a38e42051b3cb1,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

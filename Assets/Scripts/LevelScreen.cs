@@ -21,7 +21,7 @@ public class LevelScreen : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //Handle mouseDown event
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonUp(0)) {
             SceneManager.LoadScene("GameScreen");
         }
 
